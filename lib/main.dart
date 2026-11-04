@@ -1,5 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'providers/expense_provider.dart';
 import 'providers/payment_provider.dart';
 import 'providers/weather_provider.dart';
@@ -12,7 +15,16 @@ import 'services/payment_service.dart';
 import 'services/weather_service.dart';
 import 'theme/app_colors.dart';
 
-void main() => runApp(const KontrakankuApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://rdycrwvpoylyqwhpfkrb.supabase.co',
+    anonKey: 'sb_publishable_9aBM_C0y9b4D-gxfWuAB1w_V7J_6Th3',
+  );
+
+  runApp(const KontrakankuApp());
+}
 
 class KontrakankuApp extends StatelessWidget {
   const KontrakankuApp({super.key});

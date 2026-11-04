@@ -9,6 +9,7 @@ import '../widgets/section_header.dart';
 import '../widgets/summary_card.dart';
 import '../widgets/state_views.dart';
 import '../widgets/tenant_card.dart';
+import '../widgets/weather_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -61,6 +62,8 @@ class _DashboardContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const _Greeting(),
+              const SizedBox(height: 20),
+              const WeatherCard(),
               const SizedBox(height: 20),
               SummaryCard(
                   total: total,

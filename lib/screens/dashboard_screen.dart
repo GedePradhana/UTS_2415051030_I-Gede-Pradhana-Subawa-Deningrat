@@ -1,89 +1,113 @@
 import 'package:flutter/material.dart';
-import '../data/dummy_data.dart';
-import '../models/tenant.dart';
+import 'package:provider/provider.dart';
+import '../providers/expense_provider.dart';
+import '../providers/payment_provider.dart';
 import '../theme/app_colors.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_tile.dart';
 import '../widgets/section_header.dart';
 import '../widgets/summary_card.dart';
+import '../widgets/state_views.dart';
 import '../widgets/tenant_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
-  int _paidBy(Tenant t) => dummyPayments
-      .where((p) => p.tenantId == t.id)
-      .fold<int>(0, (sum, p) => sum + p.amount);
-
   @override
   Widget build(BuildContext context) {
-    final total = dummyExpenses.fold<int>(0, (sum, e) => sum + e.amount);
-    final people = dummyTenants.length;
-    final target = total ~/ people;
-    final collected = dummyPayments.fold<int>(0, (sum, p) => sum + p.amount);
-    final latest = ([...dummyExpenses]
-          ..sort((a, b) => b.expenseDate.compareTo(a.expenseDate)))
-        .take(3)
-        .toList();
+    final expenses = context.watch<ExpenseProvider>();
+    final payments = context.watch<PaymentProvider>();
+
+    final loading = expenses.isLoading || payments.isLoading;
+    final error = expenses.error ?? payments.error;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const DashboardAppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 640),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const _Greeting(),
-                const SizedBox(height: 20),
-                SummaryCard(
-                    total: total, collected: collected, people: people),
-                const SizedBox(height: 20),
-                const _ActionButtons(),
-                const SizedBox(height: 28),
-                SectionHeader(
-                    title: 'Iuran Penghuni Kontrakan',
-                    chipLabel: '$people Kamar',
-                    actionLabel: 'Detail'),
+      body: loading
+          ? const LoadingView()
+          : error != null
+              ? ErrorView(
+                  message: error,
+                  onRetry: () {
+                    expenses.loadExpenses();
+                    payments.loadAll();
+                  },
+                )
+              : _DashboardContent(expenses: expenses, payments: payments),
+    );
+  }
+}
+
+class _DashboardContent extends StatelessWidget {
+  final ExpenseProvider expenses;
+  final PaymentProvider payments;
+
+  const _DashboardContent({required this.expenses, required this.payments});
+
+  @override
+  Widget build(BuildContext context) {
+    final total = expenses.totalAmount;
+    final people = payments.peopleCount;
+    final target = total ~/ people;
+    final latest = expenses.latestExpenses;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 640),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const _Greeting(),
+              const SizedBox(height: 20),
+              SummaryCard(
+                  total: total,
+                  collected: payments.totalCollected,
+                  people: people),
+              const SizedBox(height: 20),
+              const _ActionButtons(),
+              const SizedBox(height: 28),
+              SectionHeader(
+                  title: 'Iuran Penghuni Kontrakan',
+                  chipLabel: '$people Kamar',
+                  actionLabel: 'Detail'),
+              const SizedBox(height: 14),
+              for (final t in payments.tenants) ...[
+                TenantCard(
+                    name: t.name,
+                    room: t.room,
+                    target: target,
+                    paid: payments.paidBy(t.id)),
                 const SizedBox(height: 14),
-                for (final t in dummyTenants) ...[
-                  TenantCard(
-                      name: t.name,
-                      room: t.room,
-                      target: target,
-                      paid: _paidBy(t)),
-                  const SizedBox(height: 14),
-                ],
-                const SizedBox(height: 14),
-                const SectionHeader(
-                    title: 'Pengeluaran Terbaru',
-                    showDot: true,
-                    actionLabel: 'Lihat Semua'),
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < latest.length; i++) ...[
-                        ExpenseTile(expense: latest[i], people: people),
-                        if (i < latest.length - 1)
-                          const Divider(height: 1, color: AppColors.border),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const _TipBox(),
               ],
-            ),
+              const SizedBox(height: 14),
+              const SectionHeader(
+                  title: 'Pengeluaran Terbaru',
+                  showDot: true,
+                  actionLabel: 'Lihat Semua'),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  children: [
+                    for (var i = 0; i < latest.length; i++) ...[
+                      ExpenseTile(expense: latest[i], people: people),
+                      if (i < latest.length - 1)
+                        const Divider(height: 1, color: AppColors.border),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const _TipBox(),
+            ],
           ),
         ),
       ),

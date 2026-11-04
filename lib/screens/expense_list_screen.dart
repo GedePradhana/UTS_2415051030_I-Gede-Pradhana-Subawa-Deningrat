@@ -1,31 +1,27 @@
 import 'package:flutter/material.dart';
-import '../data/dummy_data.dart';
+import 'package:provider/provider.dart';
+import '../providers/expense_provider.dart';
+import '../providers/payment_provider.dart';
 import '../theme/app_colors.dart';
 import '../utils/breakpoints.dart';
 import '../utils/formatters.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_card.dart';
+import '../widgets/state_views.dart';
 
 const _categories = ['Semua', 'Listrik', 'Air', 'Gas', 'Lainnya'];
-const _people = 3;
 
-class ExpenseListScreen extends StatefulWidget {
+class ExpenseListScreen extends StatelessWidget {
   const ExpenseListScreen({super.key});
 
   @override
-  State<ExpenseListScreen> createState() => _ExpenseListScreenState();
-}
-
-class _ExpenseListScreenState extends State<ExpenseListScreen> {
-  String _selected = 'Semua';
-
-  @override
   Widget build(BuildContext context) {
-    final filtered = _selected == 'Semua'
-        ? dummyExpenses
-        : dummyExpenses.where((e) => e.category.label == _selected).toList();
-    final total = dummyExpenses.fold<int>(0, (sum, e) => sum + e.amount);
+    final expenses = context.watch<ExpenseProvider>();
+    final payments = context.watch<PaymentProvider>();
+
+    final loading = expenses.isLoading || payments.isLoading;
+    final error = expenses.error ?? payments.error;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -40,60 +36,77 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         label: const Text('Catat Pengeluaran',
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Compact: 1 kolom. Wide: 2 kolom.
-          final isWide = constraints.maxWidth >= Breakpoints.wideContent;
-          final maxWidth = isWide ? 1000.0 : 640.0;
-          final available = constraints.maxWidth < maxWidth
-              ? constraints.maxWidth
-              : maxWidth;
-          const padding = 16.0;
-          const gap = 14.0;
-          final contentWidth = available - padding * 2;
-          final cardWidth = isWide ? (contentWidth - gap) / 2 : contentWidth;
+      body: loading
+          ? const LoadingView()
+          : error != null
+              ? ErrorView(
+                  message: error,
+                  onRetry: () {
+                    expenses.loadExpenses();
+                    payments.loadAll();
+                  },
+                )
+              : _buildList(expenses, payments.peopleCount),
+    );
+  }
 
-          return Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxWidth),
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(padding, 20, padding, 100),
-                children: [
-                  const _Header(),
-                  const SizedBox(height: 18),
-                  _TotalCard(total: total, count: dummyExpenses.length),
-                  const SizedBox(height: 16),
-                  CategoryFilterBar(
-                    categories: _categories,
-                    selected: _selected,
-                    onSelected: (c) => setState(() => _selected = c),
-                  ),
-                  const SizedBox(height: 16),
-                  if (filtered.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 40),
-                      child: Center(
-                        child: Text('Belum ada pengeluaran untuk kategori ini',
-                            style: TextStyle(color: AppColors.textGrey)),
-                      ),
+  Widget _buildList(ExpenseProvider expenses, int people) {
+    final filtered = expenses.filteredExpenses;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Compact: 1 kolom. Wide: 2 kolom.
+        final isWide = constraints.maxWidth >= Breakpoints.wideContent;
+        final maxWidth = isWide ? 1000.0 : 640.0;
+        final available =
+            constraints.maxWidth < maxWidth ? constraints.maxWidth : maxWidth;
+        const padding = 16.0;
+        const gap = 14.0;
+        final contentWidth = available - padding * 2;
+        final cardWidth = isWide ? (contentWidth - gap) / 2 : contentWidth;
+
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(padding, 20, padding, 100),
+              children: [
+                const _Header(),
+                const SizedBox(height: 18),
+                _TotalCard(
+                    total: expenses.totalAmount,
+                    count: expenses.expenses.length),
+                const SizedBox(height: 16),
+                CategoryFilterBar(
+                  categories: _categories,
+                  selected: expenses.selectedCategory,
+                  onSelected: expenses.selectCategory,
+                ),
+                const SizedBox(height: 16),
+                if (filtered.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: Center(
+                      child: Text('Belum ada pengeluaran untuk kategori ini',
+                          style: TextStyle(color: AppColors.textGrey)),
                     ),
-                  Wrap(
-                    spacing: gap,
-                    runSpacing: gap,
-                    children: [
-                      for (final e in filtered)
-                        SizedBox(
-                          width: cardWidth,
-                          child: ExpenseCard(expense: e, people: _people),
-                        ),
-                    ],
                   ),
-                ],
-              ),
+                Wrap(
+                  spacing: gap,
+                  runSpacing: gap,
+                  children: [
+                    for (final e in filtered)
+                      SizedBox(
+                        width: cardWidth,
+                        child: ExpenseCard(expense: e, people: people),
+                      ),
+                  ],
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

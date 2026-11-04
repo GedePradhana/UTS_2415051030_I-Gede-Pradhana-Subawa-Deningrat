@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/dashboard_screen.dart';
+import 'screens/main_shell.dart';
 import 'theme/app_colors.dart';
 
 void main() => runApp(const KontrakankuApp());
@@ -17,7 +17,7 @@ class KontrakankuApp extends StatelessWidget {
         colorSchemeSeed: AppColors.primary,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const DashboardScreen(),
+      home: const MainShell(),
     );
   }
 }

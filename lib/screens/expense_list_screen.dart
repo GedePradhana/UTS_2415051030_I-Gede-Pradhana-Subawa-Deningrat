@@ -1,133 +1,100 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import '../theme/category_style.dart';
 import '../utils/formatters.dart';
+import '../widgets/category_filter_bar.dart';
+import '../widgets/dashboard_app_bar.dart';
+import '../widgets/expense_card.dart';
 
-class ExpenseCard extends StatelessWidget {
+class _ExpenseItem {
   final String title;
   final String category;
   final String dateLabel;
   final int amount;
-  final int perPerson;
   final IconData? icon;
-  final VoidCallback? onTap;
-  final VoidCallback? onEdit;
 
-  const ExpenseCard({
-    super.key,
-    required this.title,
-    required this.category,
-    required this.dateLabel,
-    required this.amount,
-    required this.perPerson,
-    this.icon,
-    this.onTap,
-    this.onEdit,
-  });
+  const _ExpenseItem(this.title, this.category, this.dateLabel, this.amount,
+      {this.icon});
+}
+
+// Data dummy — akan diganti model + Supabase pada milestone berikutnya.
+const _items = <_ExpenseItem>[
+  _ExpenseItem('Token Listrik Rumah', 'Listrik', '25 Okt 2024', 300000),
+  _ExpenseItem('Iuran Wi-Fi Bulanan', 'Lainnya', '18 Okt 2024', 375000,
+      icon: Icons.wifi),
+  _ExpenseItem('Galon Air Aqua (3 Galon)', 'Air', '15 Okt 2024', 60000),
+  _ExpenseItem('Tabung Gas Elpiji 3 Kg', 'Gas', '10 Okt 2024', 45000),
+  _ExpenseItem('Sewa Kontrakan', 'Lainnya', '01 Okt 2024', 2820000,
+      icon: Icons.home_outlined),
+];
+
+const _categories = ['Semua', 'Listrik', 'Air', 'Gas', 'Lainnya'];
+const _people = 3;
+
+class ExpenseListScreen extends StatefulWidget {
+  const ExpenseListScreen({super.key});
+
+  @override
+  State<ExpenseListScreen> createState() => _ExpenseListScreenState();
+}
+
+class _ExpenseListScreenState extends State<ExpenseListScreen> {
+  String _selected = 'Semua';
 
   @override
   Widget build(BuildContext context) {
-    final style = categoryStyle(category);
+    final filtered = _selected == 'Semua'
+        ? _items
+        : _items.where((e) => e.category == _selected).toList();
+    final total = _items.fold<int>(0, (sum, e) => sum + e.amount);
 
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Row(
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: const DashboardAppBar(subtitle: 'Pengeluaran'),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: const StadiumBorder(),
+        icon: const Icon(Icons.add, size: 26),
+        label: const Text('Catat Pengeluaran',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 640),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: style.background,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon ?? style.icon, color: style.color, size: 28),
+              const _Header(),
+              const SizedBox(height: 18),
+              _TotalCard(total: total, count: _items.length),
+              const SizedBox(height: 16),
+              CategoryFilterBar(
+                categories: _categories,
+                selected: _selected,
+                onSelected: (c) => setState(() => _selected = c),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: style.background,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(category,
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: style.color)),
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text('• $dateLabel',
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                  fontSize: 12.5, color: AppColors.textGrey)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textDark)),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        const Icon(Icons.groups_outlined,
-                            size: 18, color: AppColors.primary),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text('@${formatRupiah(perPerson)} / orang',
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primary)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(formatRupiah(amount),
-                      style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textDark)),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _SquareButton(icon: Icons.edit_outlined, onTap: onEdit),
-                      const SizedBox(width: 8),
-                      _SquareButton(icon: Icons.chevron_right, onTap: onTap),
-                    ],
+              const SizedBox(height: 16),
+              if (filtered.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Center(
+                    child: Text('Belum ada pengeluaran untuk kategori ini',
+                        style: TextStyle(color: AppColors.textGrey)),
                   ),
-                ],
-              ),
+                ),
+              for (final e in filtered) ...[
+                ExpenseCard(
+                  title: e.title,
+                  category: e.category,
+                  dateLabel: e.dateLabel,
+                  amount: e.amount,
+                  perPerson: e.amount ~/ _people,
+                  icon: e.icon,
+                ),
+                const SizedBox(height: 14),
+              ],
             ],
           ),
         ),
@@ -136,25 +103,140 @@ class ExpenseCard extends StatelessWidget {
   }
 }
 
-class _SquareButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onTap;
-  const _SquareButton({required this.icon, this.onTap});
+class _Header extends StatelessWidget {
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        width: 34,
-        height: 34,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF1F3F6),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.border),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Daftar Pengeluaran',
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textDark)),
+              SizedBox(height: 6),
+              Text('Kelola tagihan bersama & iuran kontrakan',
+                  style: TextStyle(
+                      fontSize: 14.5, height: 1.35, color: AppColors.textGrey)),
+            ],
+          ),
         ),
-        child: Icon(icon, size: 18, color: const Color(0xFF4B5563)),
+        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.calendar_month_outlined,
+                  size: 18, color: AppColors.primary),
+              SizedBox(width: 8),
+              Text('Okt\n2024',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 13,
+                      height: 1.2,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textDark)),
+              SizedBox(width: 6),
+              Icon(Icons.keyboard_arrow_down,
+                  size: 20, color: AppColors.textGrey),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TotalCard extends StatelessWidget {
+  final int total;
+  final int count;
+  const _TotalCard({required this.total, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+        gradient: const LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [Color(0xFFE3F7EE), Colors.white],
+          stops: [0.0, 0.55],
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.primarySoft,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(Icons.account_balance_wallet_outlined,
+                color: AppColors.primary, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('TOTAL PENGELUARAN',
+                    style: TextStyle(
+                        fontSize: 12,
+                        letterSpacing: 0.8,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textGrey)),
+                const SizedBox(height: 4),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(formatRupiah(total),
+                      style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textDark)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text('$count Catatan',
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary)),
+              ),
+              const SizedBox(height: 8),
+              const Text('3 Penghuni Aktif',
+                  style: TextStyle(fontSize: 12.5, color: AppColors.textGrey)),
+            ],
+          ),
+        ],
       ),
     );
   }

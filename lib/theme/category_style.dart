@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/expense.dart';
 import 'app_colors.dart';
 
 class CategoryStyle {
@@ -24,4 +25,15 @@ CategoryStyle categoryStyle(String category) {
       return const CategoryStyle(
           AppColors.primary, AppColors.primarySoft, Icons.more_horiz);
   }
+}
+
+/// Ikon untuk satu pengeluaran. Kategori "Lainnya" memilih ikon dari judulnya.
+IconData iconForExpense(Expense e) {
+  if (e.category != ExpenseCategory.lainnya) {
+    return categoryStyle(e.category.label).icon;
+  }
+  final t = e.title.toLowerCase();
+  if (t.contains('wi-fi') || t.contains('wifi')) return Icons.wifi;
+  if (t.contains('sewa')) return Icons.home_outlined;
+  return Icons.more_horiz;
 }

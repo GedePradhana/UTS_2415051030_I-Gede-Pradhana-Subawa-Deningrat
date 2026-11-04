@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
 class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DashboardAppBar({super.key});
+  final String subtitle;
+
+  const DashboardAppBar({super.key, this.subtitle = 'Dashboard'});
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -33,18 +35,18 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                     color: AppColors.primary, size: 22),
               ),
               const SizedBox(width: 12),
-              const Column(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Kontrakanku',
+                  const Text('Kontrakanku',
                       style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textDark)),
-                  Text('Dashboard',
-                      style:
-                          TextStyle(fontSize: 12, color: AppColors.textGrey)),
+                  Text(subtitle,
+                      style: const TextStyle(
+                          fontSize: 12, color: AppColors.textGrey)),
                 ],
               ),
               const Spacer(),

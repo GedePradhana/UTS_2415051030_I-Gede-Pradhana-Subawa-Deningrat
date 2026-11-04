@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../utils/breakpoints.dart';
 import '../utils/formatters.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/dashboard_app_bar.dart';
@@ -60,44 +61,66 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         label: const Text('Catat Pengeluaran',
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 640),
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
-            children: [
-              const _Header(),
-              const SizedBox(height: 18),
-              _TotalCard(total: total, count: _items.length),
-              const SizedBox(height: 16),
-              CategoryFilterBar(
-                categories: _categories,
-                selected: _selected,
-                onSelected: (c) => setState(() => _selected = c),
-              ),
-              const SizedBox(height: 16),
-              if (filtered.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40),
-                  child: Center(
-                    child: Text('Belum ada pengeluaran untuk kategori ini',
-                        style: TextStyle(color: AppColors.textGrey)),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Compact: 1 kolom. Wide: 2 kolom.
+          final isWide = constraints.maxWidth >= Breakpoints.wideContent;
+          final maxWidth = isWide ? 1000.0 : 640.0;
+          final available = constraints.maxWidth < maxWidth
+              ? constraints.maxWidth
+              : maxWidth;
+          const padding = 16.0;
+          const gap = 14.0;
+          final contentWidth = available - padding * 2;
+          final cardWidth = isWide ? (contentWidth - gap) / 2 : contentWidth;
+
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(padding, 20, padding, 100),
+                children: [
+                  const _Header(),
+                  const SizedBox(height: 18),
+                  _TotalCard(total: total, count: _items.length),
+                  const SizedBox(height: 16),
+                  CategoryFilterBar(
+                    categories: _categories,
+                    selected: _selected,
+                    onSelected: (c) => setState(() => _selected = c),
                   ),
-                ),
-              for (final e in filtered) ...[
-                ExpenseCard(
-                  title: e.title,
-                  category: e.category,
-                  dateLabel: e.dateLabel,
-                  amount: e.amount,
-                  perPerson: e.amount ~/ _people,
-                  icon: e.icon,
-                ),
-                const SizedBox(height: 14),
-              ],
-            ],
-          ),
-        ),
+                  const SizedBox(height: 16),
+                  if (filtered.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
+                      child: Center(
+                        child: Text('Belum ada pengeluaran untuk kategori ini',
+                            style: TextStyle(color: AppColors.textGrey)),
+                      ),
+                    ),
+                  Wrap(
+                    spacing: gap,
+                    runSpacing: gap,
+                    children: [
+                      for (final e in filtered)
+                        SizedBox(
+                          width: cardWidth,
+                          child: ExpenseCard(
+                            title: e.title,
+                            category: e.category,
+                            dateLabel: e.dateLabel,
+                            amount: e.amount,
+                            perPerson: e.amount ~/ _people,
+                            icon: e.icon,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

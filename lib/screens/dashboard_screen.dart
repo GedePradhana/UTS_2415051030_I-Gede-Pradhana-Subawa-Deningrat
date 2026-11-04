@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../data/dummy_data.dart';
+import '../models/tenant.dart';
 import '../theme/app_colors.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_tile.dart';
@@ -9,8 +11,21 @@ import '../widgets/tenant_card.dart';
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
+  int _paidBy(Tenant t) => dummyPayments
+      .where((p) => p.tenantId == t.id)
+      .fold<int>(0, (sum, p) => sum + p.amount);
+
   @override
   Widget build(BuildContext context) {
+    final total = dummyExpenses.fold<int>(0, (sum, e) => sum + e.amount);
+    final people = dummyTenants.length;
+    final target = total ~/ people;
+    final collected = dummyPayments.fold<int>(0, (sum, p) => sum + p.amount);
+    final latest = ([...dummyExpenses]
+          ..sort((a, b) => b.expenseDate.compareTo(a.expenseDate)))
+        .take(3)
+        .toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const DashboardAppBar(),
@@ -24,25 +39,25 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 const _Greeting(),
                 const SizedBox(height: 20),
-                const SummaryCard(
-                    total: 3600000, collected: 2400000, people: 3),
+                SummaryCard(
+                    total: total, collected: collected, people: people),
                 const SizedBox(height: 20),
                 const _ActionButtons(),
                 const SizedBox(height: 28),
-                const SectionHeader(
+                SectionHeader(
                     title: 'Iuran Penghuni Kontrakan',
-                    chipLabel: '3 Kamar',
+                    chipLabel: '$people Kamar',
                     actionLabel: 'Detail'),
                 const SizedBox(height: 14),
-                const TenantCard(
-                    name: 'Budi', room: 1, target: 1200000, paid: 1200000),
+                for (final t in dummyTenants) ...[
+                  TenantCard(
+                      name: t.name,
+                      room: t.room,
+                      target: target,
+                      paid: _paidBy(t)),
+                  const SizedBox(height: 14),
+                ],
                 const SizedBox(height: 14),
-                const TenantCard(
-                    name: 'Dimas', room: 2, target: 1200000, paid: 800000),
-                const SizedBox(height: 14),
-                const TenantCard(
-                    name: 'Rizky', room: 3, target: 1200000, paid: 400000),
-                const SizedBox(height: 28),
                 const SectionHeader(
                     title: 'Pengeluaran Terbaru',
                     showDot: true,
@@ -55,37 +70,13 @@ class DashboardScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: AppColors.border),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
-                      ExpenseTile(
-                        title: 'Token Listrik PLN',
-                        dateLabel: '24 Okt 2024',
-                        amount: 300000,
-                        perPerson: 100000,
-                        icon: Icons.bolt,
-                        iconColor: AppColors.orange,
-                        iconBg: AppColors.orangeSoft,
-                      ),
-                      Divider(height: 1, color: AppColors.border),
-                      ExpenseTile(
-                        title: 'Galon Air & Gas LPG',
-                        dateLabel: '21 Okt 2024',
-                        amount: 150000,
-                        perPerson: 50000,
-                        icon: Icons.water_drop_outlined,
-                        iconColor: AppColors.blue,
-                        iconBg: AppColors.blueSoft,
-                      ),
-                      Divider(height: 1, color: AppColors.border),
-                      ExpenseTile(
-                        title: 'Wi-Fi Indihome',
-                        dateLabel: '15 Okt 2024',
-                        amount: 375000,
-                        perPerson: 125000,
-                        icon: Icons.wifi,
-                        iconColor: AppColors.primary,
-                        iconBg: AppColors.primarySoft,
-                      ),
+                      for (var i = 0; i < latest.length; i++) ...[
+                        ExpenseTile(expense: latest[i], people: people),
+                        if (i < latest.length - 1)
+                          const Divider(height: 1, color: AppColors.border),
+                      ],
                     ],
                   ),
                 ),

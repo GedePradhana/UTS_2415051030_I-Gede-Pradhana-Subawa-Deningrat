@@ -1,31 +1,25 @@
 import 'package:flutter/material.dart';
+import '../models/expense.dart';
 import '../theme/app_colors.dart';
+import '../theme/category_style.dart';
 import '../utils/formatters.dart';
 
 class ExpenseTile extends StatelessWidget {
-  final String title;
-  final String dateLabel;
-  final int amount;
-  final int perPerson;
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
+  final Expense expense;
+  final int people;
   final VoidCallback? onTap;
 
   const ExpenseTile({
     super.key,
-    required this.title,
-    required this.dateLabel,
-    required this.amount,
-    required this.perPerson,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBg,
+    required this.expense,
+    required this.people,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final style = categoryStyle(expense.category.label);
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -36,21 +30,24 @@ class ExpenseTile extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                  color: iconBg, borderRadius: BorderRadius.circular(12)),
-              child: Icon(icon, color: iconColor, size: 22),
+                  color: style.background,
+                  borderRadius: BorderRadius.circular(12)),
+              child: Icon(iconForExpense(expense),
+                  color: style.color, size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
+                  Text(expense.title,
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textDark)),
                   const SizedBox(height: 3),
-                  Text('$dateLabel • @${formatRupiah(perPerson)}/org',
+                  Text(
+                      '${formatTanggal(expense.expenseDate)} • @${formatRupiah(expense.perPerson(people))}/org',
                       style: const TextStyle(
                           fontSize: 12.5, color: AppColors.textGrey)),
                 ],
@@ -60,7 +57,7 @@ class ExpenseTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(formatRupiah(amount),
+                Text(formatRupiah(expense.amount),
                     style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,

@@ -1,33 +1,26 @@
 import 'package:flutter/material.dart';
+import '../models/expense.dart';
 import '../theme/app_colors.dart';
 import '../theme/category_style.dart';
 import '../utils/formatters.dart';
 
 class ExpenseCard extends StatelessWidget {
-  final String title;
-  final String category;
-  final String dateLabel;
-  final int amount;
-  final int perPerson;
-  final IconData? icon;
+  final Expense expense;
+  final int people;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
 
   const ExpenseCard({
     super.key,
-    required this.title,
-    required this.category,
-    required this.dateLabel,
-    required this.amount,
-    required this.perPerson,
-    this.icon,
+    required this.expense,
+    required this.people,
     this.onTap,
     this.onEdit,
   });
 
   @override
   Widget build(BuildContext context) {
-    final style = categoryStyle(category);
+    final style = categoryStyle(expense.category.label);
 
     return Material(
       color: Colors.white,
@@ -50,7 +43,7 @@ class ExpenseCard extends StatelessWidget {
                   color: style.background,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(icon ?? style.icon, color: style.color, size: 28),
+                child: Icon(iconForExpense(expense), color: style.color, size: 28),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -66,7 +59,7 @@ class ExpenseCard extends StatelessWidget {
                             color: style.background,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: Text(category,
+                          child: Text(expense.category.label,
                               style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -74,7 +67,7 @@ class ExpenseCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Flexible(
-                          child: Text('• $dateLabel',
+                          child: Text('• ${formatTanggal(expense.expenseDate)}',
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                   fontSize: 12.5, color: AppColors.textGrey)),
@@ -82,7 +75,7 @@ class ExpenseCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(title,
+                    Text(expense.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -96,7 +89,7 @@ class ExpenseCard extends StatelessWidget {
                             size: 18, color: AppColors.primary),
                         const SizedBox(width: 6),
                         Flexible(
-                          child: Text('@${formatRupiah(perPerson)} / orang',
+                          child: Text('@${formatRupiah(expense.perPerson(people))} / orang',
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                   fontSize: 12.5,
@@ -112,7 +105,7 @@ class ExpenseCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(formatRupiah(amount),
+                  Text(formatRupiah(expense.amount),
                       style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,

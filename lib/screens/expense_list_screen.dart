@@ -1,32 +1,11 @@
 import 'package:flutter/material.dart';
+import '../data/dummy_data.dart';
 import '../theme/app_colors.dart';
 import '../utils/breakpoints.dart';
 import '../utils/formatters.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_card.dart';
-
-class _ExpenseItem {
-  final String title;
-  final String category;
-  final String dateLabel;
-  final int amount;
-  final IconData? icon;
-
-  const _ExpenseItem(this.title, this.category, this.dateLabel, this.amount,
-      {this.icon});
-}
-
-// Data dummy — akan diganti model + Supabase pada milestone berikutnya.
-const _items = <_ExpenseItem>[
-  _ExpenseItem('Token Listrik Rumah', 'Listrik', '25 Okt 2024', 300000),
-  _ExpenseItem('Iuran Wi-Fi Bulanan', 'Lainnya', '18 Okt 2024', 375000,
-      icon: Icons.wifi),
-  _ExpenseItem('Galon Air Aqua (3 Galon)', 'Air', '15 Okt 2024', 60000),
-  _ExpenseItem('Tabung Gas Elpiji 3 Kg', 'Gas', '10 Okt 2024', 45000),
-  _ExpenseItem('Sewa Kontrakan', 'Lainnya', '01 Okt 2024', 2820000,
-      icon: Icons.home_outlined),
-];
 
 const _categories = ['Semua', 'Listrik', 'Air', 'Gas', 'Lainnya'];
 const _people = 3;
@@ -44,9 +23,9 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   @override
   Widget build(BuildContext context) {
     final filtered = _selected == 'Semua'
-        ? _items
-        : _items.where((e) => e.category == _selected).toList();
-    final total = _items.fold<int>(0, (sum, e) => sum + e.amount);
+        ? dummyExpenses
+        : dummyExpenses.where((e) => e.category.label == _selected).toList();
+    final total = dummyExpenses.fold<int>(0, (sum, e) => sum + e.amount);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -82,7 +61,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                 children: [
                   const _Header(),
                   const SizedBox(height: 18),
-                  _TotalCard(total: total, count: _items.length),
+                  _TotalCard(total: total, count: dummyExpenses.length),
                   const SizedBox(height: 16),
                   CategoryFilterBar(
                     categories: _categories,
@@ -105,14 +84,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                       for (final e in filtered)
                         SizedBox(
                           width: cardWidth,
-                          child: ExpenseCard(
-                            title: e.title,
-                            category: e.category,
-                            dateLabel: e.dateLabel,
-                            amount: e.amount,
-                            perPerson: e.amount ~/ _people,
-                            icon: e.icon,
-                          ),
+                          child: ExpenseCard(expense: e, people: _people),
                         ),
                     ],
                   ),

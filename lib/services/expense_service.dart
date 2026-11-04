@@ -1,12 +1,15 @@
-import '../data/dummy_data.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/expense.dart';
 
-/// Sumber data pengeluaran.
-/// Saat ini memakai data dummy; diganti Supabase pada tahap database.
+/// Mengakses tabel "expenses" di Supabase.
 class ExpenseService {
+  SupabaseClient get _client => Supabase.instance.client;
+
   Future<List<Expense>> fetchExpenses() async {
-    await Future.delayed(const Duration(milliseconds: 600)); // simulasi jaringan
-    return List.of(dummyExpenses);
-    
+    final rows = await _client
+        .from('expenses')
+        .select()
+        .order('expense_date', ascending: false);
+    return rows.map<Expense>((row) => Expense.fromJson(row)).toList();
   }
 }

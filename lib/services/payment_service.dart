@@ -1,16 +1,21 @@
-import '../data/dummy_data.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/payment.dart';
 import '../models/tenant.dart';
 
-/// Sumber data penghuni dan pembayaran (sementara data dummy).
+/// Mengakses tabel "tenants" dan "payments" di Supabase.
 class PaymentService {
+  SupabaseClient get _client => Supabase.instance.client;
+
   Future<List<Tenant>> fetchTenants() async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    return List.of(dummyTenants);
+    final rows = await _client.from('tenants').select().order('room');
+    return rows.map<Tenant>((row) => Tenant.fromJson(row)).toList();
   }
 
   Future<List<Payment>> fetchPayments() async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    return List.of(dummyPayments);
+    final rows = await _client
+        .from('payments')
+        .select()
+        .order('paid_at', ascending: false);
+    return rows.map<Payment>((row) => Payment.fromJson(row)).toList();
   }
 }

@@ -35,6 +35,7 @@ class ExpenseProvider extends ChangeNotifier {
     try {
       _expenses = await _repository.getExpenses();
     } catch (e) {
+      debugPrint('loadExpenses error: $e');
       _error = 'Gagal memuat data pengeluaran';
     } finally {
       _isLoading = false;

@@ -39,6 +39,7 @@ class PaymentProvider extends ChangeNotifier {
       _tenants = results[0] as List<Tenant>;
       _payments = results[1] as List<Payment>;
     } catch (e) {
+      debugPrint('loadAll error: $e');
       _error = 'Gagal memuat data pembayaran';
     } finally {
       _isLoading = false;

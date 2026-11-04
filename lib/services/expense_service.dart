@@ -7,5 +7,6 @@ class ExpenseService {
   Future<List<Expense>> fetchExpenses() async {
     await Future.delayed(const Duration(milliseconds: 600)); // simulasi jaringan
     return List.of(dummyExpenses);
+    
   }
 }

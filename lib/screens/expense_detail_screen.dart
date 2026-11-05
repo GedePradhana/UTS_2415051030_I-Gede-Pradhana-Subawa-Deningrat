@@ -7,6 +7,7 @@ import '../providers/payment_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/category_style.dart';
 import '../utils/formatters.dart';
+import '../widgets/delete_expense_dialog.dart';
 import '../widgets/form_app_bar.dart';
 import 'edit_expense_screen.dart';
 
@@ -142,7 +143,8 @@ class ExpenseDetailScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 54,
                   child: OutlinedButton.icon(
-                    onPressed: () {},
+                    onPressed: () =>
+                        deleteExpenseWithConfirmation(context, current),
                     icon: const Icon(Icons.delete_outline, size: 22),
                     label: const Text('Hapus Pengeluaran'),
                     style: OutlinedButton.styleFrom(

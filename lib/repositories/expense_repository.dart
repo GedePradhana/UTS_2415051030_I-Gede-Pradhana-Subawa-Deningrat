@@ -18,4 +18,6 @@ class ExpenseRepository {
 
   Future<Expense> updateExpense(Expense expense) =>
       _service.updateExpense(expense);
+
+  Future<void> deleteExpense(int id) => _service.deleteExpense(id);
 }

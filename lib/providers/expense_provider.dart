@@ -90,4 +90,17 @@ class ExpenseProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  /// Menghapus pengeluaran. Mengembalikan true jika berhasil.
+  Future<bool> deleteExpense(int id) async {
+    try {
+      await _repository.deleteExpense(id);
+      _expenses = _expenses.where((e) => e.id != id).toList();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('deleteExpense error: $e');
+      return false;
+    }
+  }
 }

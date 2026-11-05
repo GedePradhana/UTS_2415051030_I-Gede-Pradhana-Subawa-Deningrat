@@ -9,6 +9,7 @@ import '../utils/date_format.dart';
 import '../utils/formatters.dart';
 import '../utils/input_formatters.dart';
 import '../widgets/category_selector.dart';
+import '../widgets/delete_expense_dialog.dart';
 import '../widgets/form_app_bar.dart';
 import '../widgets/form_helpers.dart';
 
@@ -149,7 +150,12 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textGrey)),
                       ),
-                      Container(
+                      GestureDetector(
+                        onTap: _saving
+                            ? null
+                            : () => deleteExpenseWithConfirmation(
+                                context, widget.expense),
+                        child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
@@ -171,7 +177,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                                     color: Color(0xFFDC2626))),
                           ],
                         ),
-                      ),
+                      )),
                     ],
                   ),
                   const SizedBox(height: 14),

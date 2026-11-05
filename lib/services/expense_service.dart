@@ -35,4 +35,13 @@ class ExpenseService {
         .single();
     return Expense.fromJson(row);
   }
+
+  /// Menghapus pengeluaran berdasarkan id.
+  Future<void> deleteExpense(int id) async {
+    final deleted =
+        await _client.from('expenses').delete().eq('id', id).select();
+    if (deleted.isEmpty) {
+      throw Exception('Data tidak terhapus (id $id tidak ditemukan)');
+    }
+  }
 }

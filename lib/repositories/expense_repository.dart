@@ -12,4 +12,7 @@ class ExpenseRepository {
     data.sort((a, b) => b.expenseDate.compareTo(a.expenseDate));
     return data;
   }
+
+  Future<Expense> addExpense(Expense expense) =>
+      _service.insertExpense(expense);
 }

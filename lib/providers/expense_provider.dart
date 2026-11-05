@@ -48,4 +48,18 @@ class ExpenseProvider extends ChangeNotifier {
     _selectedCategory = category;
     notifyListeners();
   }
+
+  /// Menambah pengeluaran baru. Mengembalikan true jika berhasil disimpan.
+  Future<bool> addExpense(Expense expense) async {
+    try {
+      final saved = await _repository.addExpense(expense);
+      _expenses = [saved, ..._expenses]
+        ..sort((a, b) => b.expenseDate.compareTo(a.expenseDate));
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('addExpense error: $e');
+      return false;
+    }
+  }
 }

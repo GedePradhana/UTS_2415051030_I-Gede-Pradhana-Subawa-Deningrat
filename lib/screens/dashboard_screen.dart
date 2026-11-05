@@ -10,6 +10,7 @@ import '../widgets/summary_card.dart';
 import '../widgets/state_views.dart';
 import '../widgets/tenant_card.dart';
 import '../widgets/weather_card.dart';
+import 'add_expense_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -188,7 +189,7 @@ class _ActionButtons extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () {},
+              onPressed: () => openAddExpenseScreen(context),
             icon: const Icon(Icons.add_circle_outline, size: 22),
             label: const Text('+ Beban'),
             style: ElevatedButton.styleFrom(

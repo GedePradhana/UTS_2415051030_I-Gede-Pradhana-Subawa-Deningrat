@@ -12,4 +12,14 @@ class ExpenseService {
         .order('expense_date', ascending: false);
     return rows.map<Expense>((row) => Expense.fromJson(row)).toList();
   }
+
+  /// Menyimpan pengeluaran baru dan mengembalikan data yang tersimpan (beserta id).
+  Future<Expense> insertExpense(Expense expense) async {
+    final row = await _client
+        .from('expenses')
+        .insert(expense.toJson())
+        .select()
+        .single();
+    return Expense.fromJson(row);
+  }
 }

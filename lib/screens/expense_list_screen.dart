@@ -9,6 +9,7 @@ import '../widgets/category_filter_bar.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_card.dart';
 import '../widgets/state_views.dart';
+import 'add_expense_screen.dart';
 
 const _categories = ['Semua', 'Listrik', 'Air', 'Gas', 'Lainnya'];
 
@@ -27,7 +28,7 @@ class ExpenseListScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: const DashboardAppBar(subtitle: 'Pengeluaran'),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () => openAddExpenseScreen(context),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 4,

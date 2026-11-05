@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../utils/breakpoints.dart';
-import 'coming_soon_screen.dart';
 import 'dashboard_screen.dart';
 import 'expense_list_screen.dart';
+import 'payment_history_screen.dart';
+import 'payment_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
+  /// Pindah tab dari widget turunan (misalnya tombol di Dashboard).
+  static void selectTab(BuildContext context, int index) {
+    context.findAncestorStateOfType<MainShellState>()?.selectTab(index);
+  }
+
   @override
-  State<MainShell> createState() => _MainShellState();
+  State<MainShell> createState() => MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class MainShellState extends State<MainShell> {
   int _index = 0;
 
   static const _pages = <Widget>[
     DashboardScreen(),
     ExpenseListScreen(),
-    ComingSoonScreen(title: 'Pembayaran'),
-    ComingSoonScreen(title: 'Riwayat'),
+    PaymentScreen(),
+    PaymentHistoryScreen(),
   ];
 
   static const _labels = ['Dashboard', 'Pengeluaran', 'Pembayaran', 'Riwayat'];
@@ -30,7 +36,7 @@ class _MainShellState extends State<MainShell> {
     Icons.history,
   ];
 
-  void _onSelect(int i) => setState(() => _index = i);
+  void selectTab(int i) => setState(() => _index = i);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +52,7 @@ class _MainShellState extends State<MainShell> {
               children: [
                 NavigationRail(
                   selectedIndex: _index,
-                  onDestinationSelected: _onSelect,
+                  onDestinationSelected: selectTab,
                   labelType: NavigationRailLabelType.all,
                   backgroundColor: Colors.white,
                   indicatorColor: AppColors.primarySoft,
@@ -86,7 +92,7 @@ class _MainShellState extends State<MainShell> {
             ),
             child: BottomNavigationBar(
               currentIndex: _index,
-              onTap: _onSelect,
+              onTap: selectTab,
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.white,
               elevation: 0,

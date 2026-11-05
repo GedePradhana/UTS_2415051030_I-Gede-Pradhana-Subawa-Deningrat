@@ -10,4 +10,7 @@ class PaymentRepository {
   Future<List<Tenant>> getTenants() => _service.fetchTenants();
 
   Future<List<Payment>> getPayments() => _service.fetchPayments();
+
+  Future<Payment> addPayment(Payment payment) =>
+      _service.insertPayment(payment);
 }

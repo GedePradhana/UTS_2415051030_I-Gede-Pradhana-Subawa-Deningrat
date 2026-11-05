@@ -18,4 +18,14 @@ class PaymentService {
         .order('paid_at', ascending: false);
     return rows.map<Payment>((row) => Payment.fromJson(row)).toList();
   }
+
+  /// Menyimpan pembayaran baru dan mengembalikan data yang tersimpan.
+  Future<Payment> insertPayment(Payment payment) async {
+    final row = await _client
+        .from('payments')
+        .insert(payment.toJson())
+        .select()
+        .single();
+    return Payment.fromJson(row);
+  }
 }

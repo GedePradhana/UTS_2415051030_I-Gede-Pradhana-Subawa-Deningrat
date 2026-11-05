@@ -12,6 +12,7 @@ import '../widgets/tenant_card.dart';
 import '../widgets/weather_card.dart';
 import 'add_expense_screen.dart';
 import 'expense_detail_screen.dart';
+import 'main_shell.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -208,7 +209,7 @@ class _ActionButtons extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: () {},
+           onPressed: () => MainShell.selectTab(context, 2),
             icon: const Icon(Icons.payments_outlined,
                 size: 22, color: AppColors.primary),
             label: const Text('Catat Bayar'),

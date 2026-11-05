@@ -46,4 +46,36 @@ class PaymentProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Tenant? tenantById(int id) {
+    for (final t in _tenants) {
+      if (t.id == id) return t;
+    }
+    return null;
+  }
+
+  /// Total yang sudah dibayar penghuni sampai (dan termasuk) pembayaran [p].
+  int paidUpTo(Payment p) {
+    return _payments.where((x) {
+      if (x.tenantId != p.tenantId) return false;
+      final cmp = x.paidAt.compareTo(p.paidAt);
+      return cmp < 0 || (cmp == 0 && (x.id ?? 0) <= (p.id ?? 0));
+    }).fold<int>(0, (sum, x) => sum + x.amount);
+  }
+
+  /// Menambah pembayaran baru. Mengembalikan true jika berhasil.
+  Future<bool> addPayment(Payment payment) async {
+    try {
+      final saved = await _repository.addPayment(payment);
+      _payments = [saved, ..._payments]..sort((a, b) {
+          final c = b.paidAt.compareTo(a.paidAt);
+          return c != 0 ? c : (b.id ?? 0).compareTo(a.id ?? 0);
+        });
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('addPayment error: $e');
+      return false;
+    }
+  }
 }

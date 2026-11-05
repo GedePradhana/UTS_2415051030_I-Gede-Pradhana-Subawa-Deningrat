@@ -10,6 +10,7 @@ import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_card.dart';
 import '../widgets/state_views.dart';
 import 'add_expense_screen.dart';
+import 'expense_detail_screen.dart';
 
 const _categories = ['Semua', 'Listrik', 'Air', 'Gas', 'Lainnya'];
 
@@ -99,7 +100,11 @@ class ExpenseListScreen extends StatelessWidget {
                     for (final e in filtered)
                       SizedBox(
                         width: cardWidth,
-                        child: ExpenseCard(expense: e, people: people),
+                        child: ExpenseCard( 
+                          expense: e,
+                          people: people,
+                          onTap: () => openExpenseDetail(context, e),
+                          ),
                       ),
                   ],
                 ),

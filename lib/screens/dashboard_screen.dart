@@ -11,6 +11,7 @@ import '../widgets/state_views.dart';
 import '../widgets/tenant_card.dart';
 import '../widgets/weather_card.dart';
 import 'add_expense_screen.dart';
+import 'expense_detail_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -102,7 +103,7 @@ class _DashboardContent extends StatelessWidget {
                 child: Column(
                   children: [
                     for (var i = 0; i < latest.length; i++) ...[
-                      ExpenseTile(expense: latest[i], people: people),
+                      ExpenseTile(expense: latest[i], people: people, onTap: () => openExpenseDetail(context, latest[i]),),
                       if (i < latest.length - 1)
                         const Divider(height: 1, color: AppColors.border),
                     ],

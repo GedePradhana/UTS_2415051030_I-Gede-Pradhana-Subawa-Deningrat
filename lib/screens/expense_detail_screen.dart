@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/expense.dart';
 import '../models/tenant.dart';
+import '../providers/expense_provider.dart';
 import '../providers/payment_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/category_style.dart';
 import '../utils/formatters.dart';
 import '../widgets/form_app_bar.dart';
+import 'edit_expense_screen.dart';
 
 /// Membuka halaman Detail Pengeluaran sambil membawa data pengeluaran.
 void openExpenseDetail(BuildContext context, Expense expense) {
@@ -22,9 +24,12 @@ class ExpenseDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ambil data terbaru dari provider (agar ikut berubah setelah diedit).
+    final current =
+        context.watch<ExpenseProvider>().findById(expense.id) ?? expense;
     final tenants = context.watch<PaymentProvider>().tenants;
     final people = tenants.isEmpty ? 1 : tenants.length;
-    final perPerson = expense.perPerson(people);
+    final perPerson = current.perPerson(people);
     final recordedBy =
         tenants.isEmpty ? 'Pengelola' : '${tenants.first.name} (Pengelola)';
 
@@ -49,11 +54,13 @@ class ExpenseDetailScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               color: AppColors.textGrey)),
                     ),
-                    _SquareIconButton(icon: Icons.edit_outlined, onTap: () {}),
+                    _SquareIconButton(
+                        icon: Icons.edit_outlined,
+                        onTap: () => openEditExpense(context, current)),
                   ],
                 ),
                 const SizedBox(height: 12),
-                _MainCard(expense: expense, recordedBy: recordedBy),
+                _MainCard(expense: current, recordedBy: recordedBy),
                 const SizedBox(height: 24),
                 Row(
                   children: [
@@ -116,7 +123,7 @@ class ExpenseDetailScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () => openEditExpense(context, current),
                     icon: const Icon(Icons.edit_note, size: 24),
                     label: const Text('Edit Pengeluaran'),
                     style: ElevatedButton.styleFrom(

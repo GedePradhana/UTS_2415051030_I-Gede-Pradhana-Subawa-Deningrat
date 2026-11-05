@@ -15,4 +15,7 @@ class ExpenseRepository {
 
   Future<Expense> addExpense(Expense expense) =>
       _service.insertExpense(expense);
+
+  Future<Expense> updateExpense(Expense expense) =>
+      _service.updateExpense(expense);
 }

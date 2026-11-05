@@ -11,6 +11,7 @@ import '../widgets/expense_card.dart';
 import '../widgets/state_views.dart';
 import 'add_expense_screen.dart';
 import 'expense_detail_screen.dart';
+import 'edit_expense_screen.dart';
 
 const _categories = ['Semua', 'Listrik', 'Air', 'Gas', 'Lainnya'];
 
@@ -104,6 +105,7 @@ class ExpenseListScreen extends StatelessWidget {
                           expense: e,
                           people: people,
                           onTap: () => openExpenseDetail(context, e),
+                          onEdit: () => openEditExpense(context, e),
                           ),
                       ),
                   ],

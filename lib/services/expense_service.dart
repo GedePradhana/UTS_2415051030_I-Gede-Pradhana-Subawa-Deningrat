@@ -22,4 +22,17 @@ class ExpenseService {
         .single();
     return Expense.fromJson(row);
   }
+
+  /// Memperbarui pengeluaran berdasarkan id.
+  Future<Expense> updateExpense(Expense expense) async {
+    // Kolom id tidak boleh ikut diubah.
+    final data = expense.toJson()..remove('id');
+    final row = await _client
+        .from('expenses')
+        .update(data)
+        .eq('id', expense.id!)
+        .select()
+        .single();
+    return Expense.fromJson(row);
+  }
 }

@@ -28,6 +28,15 @@ class ExpenseProvider extends ChangeNotifier {
 
   int get totalAmount => _expenses.fold<int>(0, (sum, e) => sum + e.amount);
 
+  /// Mencari pengeluaran terbaru berdasarkan id (null jika tidak ada).
+  Expense? findById(int? id) {
+    if (id == null) return null;
+    for (final e in _expenses) {
+      if (e.id == id) return e;
+    }
+    return null;
+  }
+
   Future<void> loadExpenses() async {
     _isLoading = true;
     _error = null;
@@ -49,16 +58,35 @@ class ExpenseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _sortByDate() =>
+      _expenses.sort((a, b) => b.expenseDate.compareTo(a.expenseDate));
+
   /// Menambah pengeluaran baru. Mengembalikan true jika berhasil disimpan.
   Future<bool> addExpense(Expense expense) async {
     try {
       final saved = await _repository.addExpense(expense);
-      _expenses = [saved, ..._expenses]
-        ..sort((a, b) => b.expenseDate.compareTo(a.expenseDate));
+      _expenses = [saved, ..._expenses];
+      _sortByDate();
       notifyListeners();
       return true;
     } catch (e) {
       debugPrint('addExpense error: $e');
+      return false;
+    }
+  }
+
+  /// Memperbarui pengeluaran. Mengembalikan true jika berhasil.
+  Future<bool> updateExpense(Expense expense) async {
+    try {
+      final saved = await _repository.updateExpense(expense);
+      _expenses = [
+        for (final e in _expenses) e.id == saved.id ? saved : e,
+      ];
+      _sortByDate();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('updateExpense error: $e');
       return false;
     }
   }

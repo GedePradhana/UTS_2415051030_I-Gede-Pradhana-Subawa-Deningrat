@@ -5,6 +5,7 @@ import '../providers/payment_provider.dart';
 import '../theme/app_colors.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_tile.dart';
+import '../widgets/refreshable.dart';
 import '../widgets/section_header.dart';
 import '../widgets/summary_card.dart';
 import '../widgets/state_views.dart';
@@ -13,6 +14,7 @@ import '../widgets/weather_card.dart';
 import 'add_expense_screen.dart';
 import 'expense_detail_screen.dart';
 import 'main_shell.dart';
+import 'tenants_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -56,7 +58,7 @@ class _DashboardContent extends StatelessWidget {
     final target = total ~/ people;
     final latest = expenses.latestExpenses;
 
-    return SingleChildScrollView(
+    return RefreshableScroll(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: Center(
         child: ConstrainedBox(
@@ -78,7 +80,8 @@ class _DashboardContent extends StatelessWidget {
               SectionHeader(
                   title: 'Iuran Penghuni Kontrakan',
                   chipLabel: '$people Kamar',
-                  actionLabel: 'Detail'),
+                  actionLabel: 'Detail',
+                  onAction: () => openTenantsScreen(context)),
               const SizedBox(height: 14),
               for (final t in payments.tenants) ...[
                 TenantCard(
@@ -104,7 +107,11 @@ class _DashboardContent extends StatelessWidget {
                 child: Column(
                   children: [
                     for (var i = 0; i < latest.length; i++) ...[
-                      ExpenseTile(expense: latest[i], people: people, onTap: () => openExpenseDetail(context, latest[i]),),
+                      ExpenseTile(
+                        expense: latest[i],
+                        people: people,
+                        onTap: () => openExpenseDetail(context, latest[i]),
+                      ),
                       if (i < latest.length - 1)
                         const Divider(height: 1, color: AppColors.border),
                     ],
@@ -191,7 +198,7 @@ class _ActionButtons extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton.icon(
-              onPressed: () => openAddExpenseScreen(context),
+            onPressed: () => openAddExpenseScreen(context),
             icon: const Icon(Icons.add_circle_outline, size: 22),
             label: const Text('+ Beban'),
             style: ElevatedButton.styleFrom(
@@ -209,7 +216,7 @@ class _ActionButtons extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: OutlinedButton.icon(
-           onPressed: () => MainShell.selectTab(context, 2),
+            onPressed: () => MainShell.selectTab(context, 2),
             icon: const Icon(Icons.payments_outlined,
                 size: 22, color: AppColors.primary),
             label: const Text('Catat Bayar'),

@@ -103,4 +103,17 @@ class ExpenseProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  /// Memuat ulang tanpa menampilkan layar loading. true jika berhasil.
+  Future<bool> refresh() async {
+    try {
+      _expenses = await _repository.getExpenses();
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('refresh expenses error: $e');
+      return false;
+    }
+  }
 }

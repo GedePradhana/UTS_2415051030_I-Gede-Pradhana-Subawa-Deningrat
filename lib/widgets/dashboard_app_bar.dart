@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../utils/refresh.dart';
 
-class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
+class DashboardAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String subtitle;
 
   const DashboardAppBar({super.key, this.subtitle = 'Dashboard'});
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
+
+  @override
+  State<DashboardAppBar> createState() => _DashboardAppBarState();
+}
+
+class _DashboardAppBarState extends State<DashboardAppBar> {
+  bool _refreshing = false;
+
+  Future<void> _refresh() async {
+    if (_refreshing) return;
+    setState(() => _refreshing = true);
+    await refreshAll(context);
+    if (mounted) setState(() => _refreshing = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +59,28 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textDark)),
-                  Text(subtitle,
+                  Text(widget.subtitle,
                       style: const TextStyle(
                           fontSize: 12, color: AppColors.textGrey)),
                 ],
               ),
               const Spacer(),
-              const Icon(Icons.notifications_none,
-                  color: AppColors.textDark, size: 24),
-              const SizedBox(width: 16),
+              IconButton(
+                onPressed: _refresh,
+                tooltip: 'Muat ulang',
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                icon: _refreshing
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.5, color: AppColors.primary),
+                      )
+                    : const Icon(Icons.refresh,
+                        color: AppColors.textDark, size: 24),
+              ),
+              const SizedBox(width: 8),
               const CircleAvatar(
                 radius: 18,
                 backgroundColor: AppColors.primary,

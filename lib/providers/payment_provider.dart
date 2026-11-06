@@ -78,4 +78,71 @@ class PaymentProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  bool isRoomTaken(int room, {int? exceptId}) =>
+      _tenants.any((t) => t.room == room && t.id != exceptId);
+
+  void _sortTenants() => _tenants.sort((a, b) => a.room.compareTo(b.room));
+
+  Future<bool> addTenant({
+    required String name,
+    required String fullName,
+    required int room,
+  }) async {
+    try {
+      final saved = await _repository.addTenant(
+          name: name, fullName: fullName, room: room);
+      _tenants = [..._tenants, saved];
+      _sortTenants();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('addTenant error: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateTenant(Tenant tenant) async {
+    try {
+      final saved = await _repository.updateTenant(tenant);
+      _tenants = [for (final t in _tenants) t.id == saved.id ? saved : t];
+      _sortTenants();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('updateTenant error: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteTenant(int id) async {
+    try {
+      await _repository.deleteTenant(id);
+      _tenants = _tenants.where((t) => t.id != id).toList();
+      _payments = _payments.where((p) => p.tenantId != id).toList();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('deleteTenant error: $e');
+      return false;
+    }
+  }
+
+  /// Memuat ulang tanpa menampilkan layar loading. true jika berhasil.
+  Future<bool> refresh() async {
+    try {
+      final results = await Future.wait([
+        _repository.getTenants(),
+        _repository.getPayments(),
+      ]);
+      _tenants = results[0] as List<Tenant>;
+      _payments = results[1] as List<Payment>;
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('refresh payments error: $e');
+      return false;
+    }
+  }
 }

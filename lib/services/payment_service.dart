@@ -28,4 +28,40 @@ class PaymentService {
         .single();
     return Payment.fromJson(row);
   }
+
+  Future<Tenant> insertTenant({
+    required String name,
+    required String fullName,
+    required int room,
+  }) async {
+    final row = await _client
+        .from('tenants')
+        .insert({'name': name, 'full_name': fullName, 'room': room})
+        .select()
+        .single();
+    return Tenant.fromJson(row);
+  }
+
+  Future<Tenant> updateTenant(Tenant tenant) async {
+    final row = await _client
+        .from('tenants')
+        .update({
+          'name': tenant.name,
+          'full_name': tenant.fullName,
+          'room': tenant.room,
+        })
+        .eq('id', tenant.id)
+        .select()
+        .single();
+    return Tenant.fromJson(row);
+  }
+
+  /// Menghapus penghuni (pembayarannya ikut terhapus oleh database).
+  Future<void> deleteTenant(int id) async {
+    final deleted =
+        await _client.from('tenants').delete().eq('id', id).select();
+    if (deleted.isEmpty) {
+      throw Exception('Penghuni tidak terhapus (id $id tidak ditemukan)');
+    }
+  }
 }

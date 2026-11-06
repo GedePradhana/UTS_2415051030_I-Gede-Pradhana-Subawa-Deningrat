@@ -8,10 +8,11 @@ import '../utils/formatters.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_card.dart';
+import '../widgets/refreshable.dart';
 import '../widgets/state_views.dart';
 import 'add_expense_screen.dart';
-import 'expense_detail_screen.dart';
 import 'edit_expense_screen.dart';
+import 'expense_detail_screen.dart';
 
 const _categories = ['Semua', 'Listrik', 'Air', 'Gas', 'Lainnya'];
 
@@ -71,7 +72,7 @@ class ExpenseListScreen extends StatelessWidget {
         return Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxWidth),
-            child: ListView(
+            child: RefreshableListView(
               padding: const EdgeInsets.fromLTRB(padding, 20, padding, 100),
               children: [
                 const _Header(),
@@ -101,12 +102,12 @@ class ExpenseListScreen extends StatelessWidget {
                     for (final e in filtered)
                       SizedBox(
                         width: cardWidth,
-                        child: ExpenseCard( 
+                        child: ExpenseCard(
                           expense: e,
                           people: people,
                           onTap: () => openExpenseDetail(context, e),
                           onEdit: () => openEditExpense(context, e),
-                          ),
+                        ),
                       ),
                   ],
                 ),

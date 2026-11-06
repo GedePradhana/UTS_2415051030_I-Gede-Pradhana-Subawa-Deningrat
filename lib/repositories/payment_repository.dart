@@ -13,4 +13,15 @@ class PaymentRepository {
 
   Future<Payment> addPayment(Payment payment) =>
       _service.insertPayment(payment);
+
+  Future<Tenant> addTenant({
+    required String name,
+    required String fullName,
+    required int room,
+  }) =>
+      _service.insertTenant(name: name, fullName: fullName, room: room);
+
+  Future<Tenant> updateTenant(Tenant tenant) => _service.updateTenant(tenant);
+
+  Future<void> deleteTenant(int id) => _service.deleteTenant(id);
 }

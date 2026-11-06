@@ -12,6 +12,7 @@ import '../utils/input_formatters.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/form_helpers.dart';
 import '../widgets/payment_history_list.dart';
+import '../widgets/refreshable.dart';
 import '../widgets/state_views.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -45,7 +46,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     payments.loadAll();
                   },
                 )
-              : SingleChildScrollView(
+              : RefreshableScroll(
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
                   child: Center(
                     child: ConstrainedBox(

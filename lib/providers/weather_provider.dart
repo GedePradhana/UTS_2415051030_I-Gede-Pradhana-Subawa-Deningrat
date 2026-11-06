@@ -30,4 +30,17 @@ class WeatherProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Memuat ulang tanpa menampilkan loading. true jika berhasil.
+  Future<bool> refresh() async {
+    try {
+      _weather = await _repository.getCurrentWeather();
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('refresh weather error: $e');
+      return false;
+    }
+  }
 }

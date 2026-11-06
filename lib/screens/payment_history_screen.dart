@@ -6,6 +6,7 @@ import '../theme/app_colors.dart';
 import '../utils/formatters.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/payment_history_list.dart';
+import '../widgets/refreshable.dart';
 import '../widgets/state_views.dart';
 
 /// Tab "Riwayat": seluruh pembayaran penghuni.
@@ -33,7 +34,7 @@ class PaymentHistoryScreen extends StatelessWidget {
                     payments.loadAll();
                   },
                 )
-              : SingleChildScrollView(
+              : RefreshableScroll(
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
                   child: Center(
                     child: ConstrainedBox(

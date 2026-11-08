@@ -281,7 +281,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         disabledBackgroundColor:
-                            AppColors.primary.withOpacity(0.6),
+                            AppColors.primary.withAlpha(153),
                         disabledForegroundColor: Colors.white,
                         elevation: 0,
                         textStyle: const TextStyle(

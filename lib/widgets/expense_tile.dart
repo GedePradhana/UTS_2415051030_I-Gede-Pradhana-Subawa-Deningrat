@@ -47,7 +47,7 @@ class ExpenseTile extends StatelessWidget {
                           color: AppColors.textDark)),
                   const SizedBox(height: 3),
                   Text(
-                      '${formatTanggal(expense.expenseDate)} • @${formatRupiah(expense.perPerson(people))}/org',
+                      '${formatTanggal(expense.expenseDate)} • ${formatRupiah(expense.perPerson(people))}/org',
                       style: const TextStyle(
                           fontSize: 12.5, color: AppColors.textGrey)),
                 ],

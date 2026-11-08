@@ -396,24 +396,34 @@ class _RecordPaymentTabState extends State<_RecordPaymentTab> {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                for (var i = 0; i < unpaid.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 12),
-                  Expanded(
-                    child: _TenantOption(
-                      tenant: unpaid[i],
-                      remaining: remainingOf(unpaid[i]),
-                      isSelected: unpaid[i].id == selected.id,
-                      onTap: () {
-                        setState(() => _selectedId = unpaid[i].id);
-                        _amountController.clear();
-                        _formKey.currentState?.reset();
-                      },
-                    ),
-                  ),
-                ],
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const gap = 12.0;
+                final cols = unpaid.length >= 3 && constraints.maxWidth >= 420
+                    ? 3
+                    : (unpaid.length == 1 ? 1 : 2);
+                final width = (constraints.maxWidth - gap * (cols - 1)) / cols;
+                return Wrap(
+                  spacing: gap,
+                  runSpacing: gap,
+                  children: [
+                    for (final t in unpaid)
+                      SizedBox(
+                        width: width,
+                        child: _TenantOption(
+                          tenant: t,
+                          remaining: remainingOf(t),
+                          isSelected: t.id == selected.id,
+                          onTap: () {
+                            setState(() => _selectedId = t.id);
+                            _amountController.clear();
+                            _formKey.currentState?.reset();
+                          },
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 14),
             Container(
@@ -651,7 +661,7 @@ class _RecordPaymentTabState extends State<_RecordPaymentTab> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+                  disabledBackgroundColor: AppColors.primary.withAlpha(153),
                   disabledForegroundColor: Colors.white,
                   elevation: 0,
                   textStyle: const TextStyle(
@@ -709,8 +719,8 @@ class _TenantOption extends StatelessWidget {
                 ),
                 Icon(
                     isSelected
-                        ? Icons.check_circle_outline
-                        : Icons.check_circle_outline,
+                        ? Icons.check_circle
+                        : Icons.radio_button_unchecked,
                     size: 20,
                     color: isSelected
                         ? AppColors.primary

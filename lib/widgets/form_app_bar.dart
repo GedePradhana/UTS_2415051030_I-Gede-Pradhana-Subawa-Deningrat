@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/profile_screen.dart';
 import '../theme/app_colors.dart';
 
 /// App bar untuk halaman form/detail: tombol kembali + judul.
@@ -37,10 +38,15 @@ class FormAppBar extends StatelessWidget implements PreferredSizeWidget {
                         fontWeight: FontWeight.w700,
                         color: AppColors.textDark)),
               ),
-              const CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColors.primary,
-                child: Icon(Icons.person_outline, color: Colors.white, size: 20),
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () => openProfileScreen(context),
+                child: const CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.primary,
+                  child:
+                      Icon(Icons.person_outline, color: Colors.white, size: 20),
+                ),
               ),
               const SizedBox(width: 8),
             ],

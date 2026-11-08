@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../screens/profile_screen.dart';
 import '../utils/refresh.dart';
 
 class DashboardAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -81,10 +82,15 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                         color: AppColors.textDark, size: 24),
               ),
               const SizedBox(width: 8),
-              const CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColors.primary,
-                child: Icon(Icons.person_outline, color: Colors.white, size: 20),
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () => openProfileScreen(context),
+                child: const CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.primary,
+                  child:
+                      Icon(Icons.person_outline, color: Colors.white, size: 20),
+                ),
               ),
             ],
           ),

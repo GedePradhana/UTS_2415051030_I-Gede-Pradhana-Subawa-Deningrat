@@ -89,7 +89,7 @@ class ExpenseCard extends StatelessWidget {
                             size: 18, color: AppColors.primary),
                         const SizedBox(width: 6),
                         Flexible(
-                          child: Text('@${formatRupiah(expense.perPerson(people))} / orang',
+                          child: Text('${formatRupiah(expense.perPerson(people))} / orang',
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                   fontSize: 12.5,

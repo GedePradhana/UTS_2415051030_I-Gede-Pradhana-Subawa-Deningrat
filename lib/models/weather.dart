@@ -26,11 +26,6 @@ class Weather {
     );
   }
 
-  bool get isRaining =>
-      (weatherCode >= 51 && weatherCode <= 67) ||
-      (weatherCode >= 80 && weatherCode <= 82) ||
-      weatherCode >= 95;
-
   /// Deskripsi dari kode cuaca WMO.
   String get description {
     if (weatherCode == 0) return 'Cerah';
@@ -45,14 +40,5 @@ class Weather {
     if (weatherCode == 85 || weatherCode == 86) return 'Salju lebat';
     if (weatherCode >= 95) return 'Badai petir';
     return 'Tidak diketahui';
-  }
-
-  /// Saran singkat yang terkait pemakaian listrik dan air kontrakan.
-  String get tip {
-    if (isRaining) return 'Sedang hujan, pemakaian air biasanya lebih hemat.';
-    if (temperature >= 30) {
-      return 'Cuaca panas, pemakaian listrik (kipas/AC) biasanya naik.';
-    }
-    return 'Cuaca nyaman, pemakaian listrik dan air cenderung normal.';
   }
 }

@@ -152,30 +152,6 @@ class _WeatherData extends StatelessWidget {
                 label: 'Angin ${weather.windSpeed.round()} km/jam'),
           ],
         ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEAF8F1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.lightbulb_outline,
-                  size: 18, color: AppColors.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(weather.tip,
-                    style: const TextStyle(
-                        fontSize: 13,
-                        height: 1.35,
-                        color: AppColors.textGrey)),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }

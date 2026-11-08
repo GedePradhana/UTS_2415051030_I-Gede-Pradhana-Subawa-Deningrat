@@ -4,10 +4,12 @@ import '../providers/expense_provider.dart';
 import '../providers/payment_provider.dart';
 import '../theme/app_colors.dart';
 import '../utils/breakpoints.dart';
+import '../utils/date_format.dart';
 import '../utils/formatters.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/dashboard_app_bar.dart';
 import '../widgets/expense_card.dart';
+import '../widgets/month_picker_dialog.dart';
 import '../widgets/refreshable.dart';
 import '../widgets/state_views.dart';
 import 'add_expense_screen.dart';
@@ -56,6 +58,7 @@ class ExpenseListScreen extends StatelessWidget {
 
   Widget _buildList(ExpenseProvider expenses, int people) {
     final filtered = expenses.filteredExpenses;
+    final month = expenses.selectedMonth;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -75,11 +78,17 @@ class ExpenseListScreen extends StatelessWidget {
             child: RefreshableListView(
               padding: const EdgeInsets.fromLTRB(padding, 20, padding, 100),
               children: [
-                const _Header(),
+                _Header(
+                  monthLabel: month == null
+                      ? 'Semua\nBulan'
+                      : formatBulanTahunDuaBaris(month),
+                  onMonthTap: () => _pickMonth(context, expenses),
+                ),
                 const SizedBox(height: 18),
                 _TotalCard(
-                    total: expenses.totalAmount,
-                    count: expenses.expenses.length),
+                    total: expenses.monthTotal,
+                    count: expenses.monthExpenses.length,
+                    people: people),
                 const SizedBox(height: 16),
                 CategoryFilterBar(
                   categories: _categories,
@@ -91,7 +100,7 @@ class ExpenseListScreen extends StatelessWidget {
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 40),
                     child: Center(
-                      child: Text('Belum ada pengeluaran untuk kategori ini',
+                      child: Text('Tidak ada pengeluaran untuk filter ini',
                           style: TextStyle(color: AppColors.textGrey)),
                     ),
                   ),
@@ -120,8 +129,20 @@ class ExpenseListScreen extends StatelessWidget {
   }
 }
 
+Future<void> _pickMonth(BuildContext context, ExpenseProvider expenses) async {
+  final result = await showMonthPickerDialog(
+    context,
+    initial: expenses.selectedMonth,
+    hasData: expenses.hasExpensesIn,
+  );
+  if (result != null) expenses.selectMonth(result.month);
+}
+
 class _Header extends StatelessWidget {
-  const _Header();
+  final String monthLabel;
+  final VoidCallback onMonthTap;
+
+  const _Header({required this.monthLabel, required this.onMonthTap});
 
   @override
   Widget build(BuildContext context) {
@@ -145,30 +166,33 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.calendar_month_outlined,
-                  size: 18, color: AppColors.primary),
-              SizedBox(width: 8),
-              Text('Okt\n2024',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 13,
-                      height: 1.2,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textDark)),
-              SizedBox(width: 6),
-              Icon(Icons.keyboard_arrow_down,
-                  size: 20, color: AppColors.textGrey),
-            ],
+        GestureDetector(
+          onTap: onMonthTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.calendar_month_outlined,
+                    size: 18, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Text(monthLabel,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.2,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark)),
+                const SizedBox(width: 6),
+                const Icon(Icons.keyboard_arrow_down,
+                    size: 20, color: AppColors.textGrey),
+              ],
+            ),
           ),
         ),
       ],
@@ -179,7 +203,9 @@ class _Header extends StatelessWidget {
 class _TotalCard extends StatelessWidget {
   final int total;
   final int count;
-  const _TotalCard({required this.total, required this.count});
+  final int people;
+  const _TotalCard(
+      {required this.total, required this.count, required this.people});
 
   @override
   Widget build(BuildContext context) {
@@ -249,8 +275,9 @@ class _TotalCard extends StatelessWidget {
                         color: AppColors.primary)),
               ),
               const SizedBox(height: 8),
-              const Text('3 Penghuni Aktif',
-                  style: TextStyle(fontSize: 12.5, color: AppColors.textGrey)),
+              Text('$people Penghuni Aktif',
+                  style: const TextStyle(
+                      fontSize: 12.5, color: AppColors.textGrey)),
             ],
           ),
         ],

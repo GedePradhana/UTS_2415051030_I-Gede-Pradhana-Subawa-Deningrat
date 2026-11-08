@@ -112,37 +112,50 @@ class SplitSummaryCard extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                   color: AppColors.textDark)),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              for (var i = 0; i < tenants.length; i++) ...[
-                if (i > 0) const SizedBox(width: 8),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFCFF0E1)),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const gap = 8.0;
+              final cols = tenants.length >= 3
+                  ? 3
+                  : (tenants.isEmpty ? 1 : tenants.length);
+              final width = (constraints.maxWidth - gap * (cols - 1)) / cols;
+              return Wrap(
+                spacing: gap,
+                runSpacing: gap,
+                children: [
+                  for (final t in tenants)
+                    SizedBox(
+                      width: width,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFCFF0E1)),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Column(
+                            children: [
+                              Text(t.name,
+                                  style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textDark)),
+                              const SizedBox(height: 2),
+                              Text('+${formatRupiah(perPerson)}',
+                                  style: const TextStyle(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary)),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        Text(tenants[i].name,
-                            style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textDark)),
-                        const SizedBox(height: 2),
-                        Text('+${formatRupiah(perPerson)}',
-                            style: const TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: 12),
           Row(

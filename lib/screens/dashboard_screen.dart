@@ -66,7 +66,7 @@ class _DashboardContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _Greeting(),
+              _Greeting(people: people),
               const SizedBox(height: 20),
               const WeatherCard(),
               const SizedBox(height: 20),
@@ -92,10 +92,16 @@ class _DashboardContent extends StatelessWidget {
                 const SizedBox(height: 14),
               ],
               const SizedBox(height: 14),
-              const SectionHeader(
+              SectionHeader(
                   title: 'Pengeluaran Terbaru',
                   showDot: true,
-                  actionLabel: 'Lihat Semua'),
+                  actionLabel: 'Lihat Semua',
+                  onAction: () {
+                    final expenses = context.read<ExpenseProvider>();
+                    expenses.selectCategory('Semua');
+                    expenses.selectMonth(null);
+                    MainShell.selectTab(context, 1);
+                  }),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -118,8 +124,6 @@ class _DashboardContent extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-              const _TipBox(),
             ],
           ),
         ),
@@ -129,61 +133,32 @@ class _DashboardContent extends StatelessWidget {
 }
 
 class _Greeting extends StatelessWidget {
-  const _Greeting();
+  final int people;
+  const _Greeting({required this.people});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(radius: 4, backgroundColor: AppColors.primary),
-                  SizedBox(width: 8),
-                  Flexible(
-                    child: Text('Catatan Kas Bersama (3 Penghuni)',
-                        style: TextStyle(
-                            fontSize: 13, color: AppColors.textGrey)),
-                  ),
-                ],
-              ),
-              SizedBox(height: 6),
-              Text('Halo, Pengelola Kontrakan 👋',
-                  style: TextStyle(
-                      fontSize: 22,
-                      height: 1.25,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textDark)),
-            ],
-          ),
+        Row(
+          children: [
+            const CircleAvatar(radius: 4, backgroundColor: AppColors.primary),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text('Catatan Kas Bersama ($people Penghuni)',
+                  style: const TextStyle(
+                      fontSize: 13, color: AppColors.textGrey)),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.calendar_month_outlined,
-                  size: 18, color: AppColors.primary),
-              SizedBox(width: 8),
-              Text('Okt\n2024',
-                  style: TextStyle(
-                      fontSize: 13,
-                      height: 1.2,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textDark)),
-            ],
-          ),
-        ),
+        const SizedBox(height: 6),
+        const Text('Halo, Pengelola Kontrakan 👋',
+            style: TextStyle(
+                fontSize: 22,
+                height: 1.25,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textDark)),
       ],
     );
   }
@@ -200,7 +175,7 @@ class _ActionButtons extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => openAddExpenseScreen(context),
             icon: const Icon(Icons.add_circle_outline, size: 22),
-            label: const Text('+ Beban'),
+            label: const Text('Beban'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
@@ -232,35 +207,6 @@ class _ActionButtons extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _TipBox extends StatelessWidget {
-  const _TipBox();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEAF8F1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFCFF0E1)),
-      ),
-      child: const Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.lightbulb_outline, color: AppColors.primary, size: 20),
-          SizedBox(width: 12),
-          Expanded(
-            child: Text(
-                'Total kas dikelola mandiri. Pembayaran oleh anak kontrakan otomatis memotong sisa tunggakan kamar.',
-                style: TextStyle(
-                    fontSize: 13.5, height: 1.4, color: AppColors.textGrey)),
-          ),
-        ],
-      ),
     );
   }
 }

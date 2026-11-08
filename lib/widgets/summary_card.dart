@@ -41,7 +41,7 @@ class SummaryCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('TOTAL BEBAN BULAN INI',
+                    const Text('TOTAL BEBAN',
                         style: TextStyle(
                             fontSize: 12,
                             letterSpacing: 0.8,

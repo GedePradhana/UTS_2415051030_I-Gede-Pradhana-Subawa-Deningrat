@@ -101,15 +101,15 @@ Layout responsif memakai `LayoutBuilder`: **compact** (di bawah 800 px) memakai 
 
 **Layout responsif**
 
-| Compact | Wide |
-|---|---|
-| ![Compact](docs/screenshots/10-responsive-compact.png) | ![Wide](docs/screenshots/11-responsive-wide.png) |
+| Wide |
+|---|
+| ![Wide](docs/screenshots/10-responsive-wide.png) |
 
 **Data REST API dan database**
 
 | Cuaca (REST API) | Tabel Supabase |
 |---|---|
-| ![Cuaca](docs/screenshots/12-api-cuaca.png) | ![Database](docs/screenshots/13-database-supabase.png) |
+| ![Cuaca](docs/screenshots/11-api-cuaca.png) | ![Database](docs/screenshots/12-database-supabase.png) |
 
 
 ## Cara Menjalankan

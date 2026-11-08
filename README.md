@@ -12,8 +12,7 @@ Project ini dibuat untuk Ujian Tengah Semester mata kuliah **Pemrograman Mobile*
 | NIM | 2415051030 |
 | Kelas | PTI 5C |
 | Tema | Pencatatan pengeluaran dan pembayaran kontrakan |
-| APK | [Download UTS_2415051030_IGedePradhanaSubawaDeningrat.apk](build\app\outputs\flutter-apk\UTS_2415051030_IGedePradhanaSubawaDeningrat.apk) |
-
+| APK | [Download UTS_2415051030_IGedePradhanaSubawaDeningrat.apk](https://github.com/GedePradhana/UTS_2415051030_I-Gede-Pradhana-Subawa-Deningrat/releases/latest/download/UTS_2415051030_IGedePradhanaSubawaDeningrat.apk) |
 
 ## Fitur
 
